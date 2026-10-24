@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PZ // B4110.TECH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #262626;
+      --text: #e5e5e5;
+      --muted: #737373;
+      --online: #22c55e;
+      --offline: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 540px;
+      border: 1px solid var(--border);
+      background-color: var(--surface);
+    }
+
+    .header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title-group h1 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .title-group p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--muted);
+    }
+
+    .dot.online { background-color: var(--online); box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+    .dot.offline { background-color: var(--offline); }
+
+    .grid { display: grid; grid-template-columns: 1fr; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background-color 0.1s ease;
+      user-select: none;
+    }
+
+    .row:last-child { border-bottom: none; }
+    .row:hover { background-color: #171717; }
+    .row.no-copy { cursor: default; }
+    .row.no-copy:hover { background-color: transparent; }
+
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .value-wrap { display: flex; align-items: center; gap: 12px; }
+    .value { font-weight: 500; color: var(--text); }
+
+    .copy-hint {
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      background: var(--bg);
+      min-width: 68px;
+      text-align: center;
+    }
+
+    .row:hover .copy-hint { border-color: #404040; color: var(--text); }
+
+    .footer {
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      background-color: var(--bg);
+      color: var(--muted);
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .spoiler { filter: blur(4px); transition: filter 0.15s ease; }
+    .row:hover .spoiler { filter: blur(0); }
+  </style>
+</head>
+<body>
+
+  <main class="container">
+    <header class="header">
+      <div class="title-group">
+        <h1 id="server-name">KNOX EVENT // B4110</h1>
+        <p>Project Zomboid — Build 41 Multiplayer</p>
+      </div>
+      <div class="status-badge">
+        <span class="dot" id="status-dot"></span>
+        <span id="status-text">FRISSÍTÉS...</span>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div class="row no-copy">
+        <span class="label">Játékosok</span>
+        <div class="value-wrap">
+          <span class="value" id="players-val">-- / 7</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="copyText('ip-val', 'ip-hint')">
+        <span class="label">Szerver IP / Cím</span>
+        <div class="value-wrap">
+          <span class="value" id="ip-val">pz.b4110.tech</span>
+          <span class="copy-hint" id="ip-hint">MÁSOLÁS</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="copyText('port-val', 'port-hint')">
+        <span class="label">Port</span>
+        <div class="value-wrap">
+          <span class="value" id="port-val">45123</span>
+          <span class="copy-hint" id="port-hint">MÁSOLÁS</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="copyText('pass-val', 'pass-hint')">
+        <span class="label">Szerver Jelszó</span>
+        <div class="value-wrap">
+          <span class="value spoiler" id="pass-val">BaratokJelszava</span>
+          <span class="copy-hint" id="pass-hint">MÁSOLÁS</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>MODOK: AUTOMATIKUS LETÖLTÉS BELÉPÉSKOR</span>
+      <span>HP PRODESK NODE</span>
+    </footer>
+  </main>
+
+  <script>
+    // ==========================================
+    // EZT A 3 SORT ÍRD ÁT A SAJÁT ADATAIDRA:
+    // ==========================================
+    const CONFIG = {
+      serverName: "KNOX EVENT // B4110",
+      ip: "pz.b4110.tech",
+      port: "20396",                // <-- Playit által adott portszámod
+      password: "123",  // <-- Szerver jelszavad
+      maxPlayers: 7,
+      gistRawUrl: "https://gist.githubusercontent.com/B4110/fc3a7c1ee8ed72dcc8c59915e434453c/raw/status.json"
+    };
+
+    document.getElementById('server-name').textContent = CONFIG.serverName;
+    document.getElementById('ip-val').textContent = CONFIG.ip;
+    document.getElementById('port-val').textContent = CONFIG.port;
+    document.getElementById('pass-val').textContent = CONFIG.password;
+
+    function copyText(elementId, hintId) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const hint = document.getElementById(hintId);
+        const original = hint.textContent;
+        hint.textContent = "MÁSOLVA";
+        hint.style.color = "#22c55e";
+        hint.style.borderColor = "#22c55e";
+        setTimeout(() => {
+          hint.textContent = original;
+          hint.style.color = "";
+          hint.style.borderColor = "";
+        }, 1500);
+      });
+    }
+
+    async function fetchStatus() {
+      const dot = document.getElementById('status-dot');
+      const text = document.getElementById('status-text');
+      const players = document.getElementById('players-val');
+
+      try {
+        const res = await fetch(`${CONFIG.gistRawUrl}?t=${Date.now()}`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        if (data.online) {
+          dot.className = "dot online";
+          text.textContent = "ONLINE";
+          players.textContent = `${data.players} / ${CONFIG.maxPlayers}`;
+        } else {
+          dot.className = "dot offline";
+          text.textContent = "OFFLINE";
+          players.textContent = `0 / ${CONFIG.maxPlayers}`;
+        }
+      } catch (e) {
+        dot.className = "dot";
+        text.textContent = "ISMERETLEN";
+      }
+    }
+
+    fetchStatus();
+    setInterval(fetchStatus, 30000);
+  </script>
+</body>
+</html>
