@@ -191,10 +191,10 @@
 
   <script>
     // ==========================================
-    // EZT A 3 SORT ÍRD ÁT A SAJÁT ADATAIDRA:
+    // SZERVER KONFIGURÁCIÓ
     // ==========================================
-    const CONFIG = {
-      serverName: "KNOX EVENT // B4110",
+        const CONFIG = {
+      serverName: "Fabianhaza // B4110",
       ip: "pz.b4110.tech",
       port: "20396",                // <-- Playit által adott portszámod
       password: "123",  // <-- Szerver jelszavad
@@ -229,9 +229,16 @@
       const players = document.getElementById('players-val');
 
       try {
-        const res = await fetch(`${CONFIG.gistRawUrl}?t=${Date.now()}`);
+        // Közvetlen GitHub API lekérdezés (nincs 5 perces Raw cache!)
+        const res = await fetch(`https://api.github.com/gists/${CONFIG.gistId}`, {
+          cache: "no-store"
+        });
         if (!res.ok) throw new Error();
-        const data = await res.json();
+        const gistData = await res.json();
+        
+        // Kiolvassuk a status.json fájl tartalmát
+        const rawContent = gistData.files["status.json"].content;
+        const data = JSON.parse(rawContent);
 
         if (data.online) {
           dot.className = "dot online";
@@ -245,6 +252,7 @@
       } catch (e) {
         dot.className = "dot";
         text.textContent = "ISMERETLEN";
+        players.textContent = `-- / ${CONFIG.maxPlayers}`;
       }
     }
 
